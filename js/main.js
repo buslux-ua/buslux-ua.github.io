@@ -1,4 +1,4 @@
-/* TransferLux — interactions */
+/* BusLux — interactions */
 (function () {
   "use strict";
 
@@ -121,26 +121,28 @@
   });
 
   /* ---------------- Gallery ---------------- */
+  // Real BusLux photos (img/). s = tile size, p = focus point inside the tile
   var photos = [
-    { id: "photo-1765461734605-34657fa04db2", c: "ext", k: "g.1", s: "is-wide" },
-    { id: "photo-1552561018-5fea54c08479", c: "int", k: "g.4", s: "is-tall" },
-    { id: "photo-1684208551876-bbfbcf11ab02", c: "seat", k: "g.5" },
-    { id: "photo-1688619103602-35c5b27a6619", c: "ext", k: "g.2" },
-    { id: "photo-1542705959-878ca346eb20", c: "road", k: "g.7", s: "is-wide" },
-    { id: "photo-1570125910130-67cb59733d1d", c: "seat", k: "g.6" },
-    { id: "photo-1623835176016-bcaf8bca4a90", c: "ext", k: "g.3", s: "is-tall" },
-    { id: "photo-1710969271696-96d56d819088", c: "int", k: "g.8" },
-    { id: "photo-1614972973038-0b48128b999c", c: "ext", k: "g.9" },
-    { id: "photo-1515445702422-3a80ccfdb236", c: "road", k: "g.10" },
-    { id: "photo-1750210505997-ed85e9f8cb12", c: "seat", k: "g.11", s: "is-wide" },
-    { id: "photo-1688619102600-976b3bb41aaf", c: "ext", k: "g.12" },
-    { id: "photo-1753295687824-22b36f3daa33", c: "int", k: "g.13" },
-    { id: "photo-1563916171915-9797367db280", c: "road", k: "g.14" }
+    { f: "sprinter-white-two", c: "ext", k: "g.1", s: "is-tall", p: "50% 60%" },
+    { f: "interior-light-vip", c: "int", k: "g.2", s: "is-tall" },
+    { f: "seat-recliner-closeup", c: "seat", k: "g.3", s: "is-tall" },
+    { f: "vw-interior-brown", c: "seat", k: "g.4", s: "is-wide", p: "50% 45%" },
+    { f: "interior-turquoise", c: "int", k: "g.5", s: "is-tall" },
+    { f: "vw-black-exterior", c: "ext", k: "g.6", s: "is-tall", p: "50% 65%" },
+    { f: "seats-three-light", c: "seat", k: "g.7" },
+    { f: "interior-white-diamond", c: "int", k: "g.8", s: "is-tall" },
+    { f: "sprinter-black-door", c: "ext", k: "g.9", s: "is-tall" },
+    { f: "seats-grey-vip", c: "seat", k: "g.10" },
+    { f: "interior-purple", c: "int", k: "g.11", s: "is-tall" },
+    { f: "sprinter-interior-light", c: "int", k: "g.12", s: "is-tall" },
+    { f: "seat-detail-gold", c: "seat", k: "g.13" },
+    { f: "interior-brown-orange", c: "int", k: "g.14", s: "is-tall" }
   ];
+  var SRC = function (p) { return "img/" + p.f + ".jpg"; };
   var grid = $("#galleryGrid");
   grid.innerHTML = photos.map(function (p, i) {
     return '<figure class="gallery__item reveal ' + (p.s || "") + '" data-cat="' + p.c + '" data-i="' + i + '" tabindex="0" role="button">' +
-      '<img loading="lazy" decoding="async" alt="" src="' + IMG(p.id, 700, 520) + '" srcset="' + IMG(p.id, 420, 320) + ' 420w, ' + IMG(p.id, 900, 680) + ' 900w" sizes="(max-width:640px) 50vw, (max-width:1100px) 33vw, 25vw">' +
+      '<img loading="lazy" decoding="async" alt="" src="' + SRC(p) + '"' + (p.p ? ' style="object-position:' + p.p + '"' : "") + '>' +
       '<figcaption><small></small><span></span></figcaption></figure>';
   }).join("");
   var items = $$(".gallery__item", grid);
@@ -175,8 +177,8 @@
   /* Lightbox */
   var lb = $("#lightbox"), lbImg = $("img", lb), lbCap = $("figcaption", lb), lbCount = $(".lightbox__count", lb);
   var visible = [], cur = 0, lastFocus = null;
-  function openLb(i) {
-    visible = items.filter(function (el) { return !el.classList.contains("is-hidden"); }).map(function (el) { return +el.getAttribute("data-i"); });
+  function openLb(i, list) {
+    visible = list || items.filter(function (el) { return !el.classList.contains("is-hidden"); }).map(function (el) { return +el.getAttribute("data-i"); });
     cur = Math.max(0, visible.indexOf(i));
     lastFocus = document.activeElement;
     showLb();
@@ -187,9 +189,8 @@
   function showLb() {
     var p = photos[visible[cur]];
     lbImg.classList.add("is-loading");
-    var w = Math.min(2000, Math.round(window.innerWidth * (window.devicePixelRatio || 1)));
     lbImg.onload = function () { lbImg.classList.remove("is-loading"); };
-    lbImg.src = IMG(p.id, w, null, 80);
+    lbImg.src = SRC(p);
     lbImg.alt = t(p.k);
     lbCap.textContent = t("cat." + p.c) + " · " + t(p.k);
     lbCount.textContent = (cur + 1) + " / " + visible.length;
@@ -203,6 +204,13 @@
   items.forEach(function (el) {
     el.addEventListener("click", function () { openLb(+el.getAttribute("data-i")); });
     el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(+el.getAttribute("data-i")); } });
+  });
+  // seat photos in the "recliner" block open in the same full-screen viewer
+  var reclList = ["seat-recliner-closeup", "seats-three-light", "interior-light-vip", "seats-grey-vip"].map(function (f) {
+    for (var j = 0; j < photos.length; j++) if (photos[j].f === f) return j;
+  });
+  $$(".recliner__shot").forEach(function (b) {
+    b.addEventListener("click", function () { var n = reclList[+b.getAttribute("data-shot")]; openLb(n, reclList); });
   });
   $(".lightbox__close", lb).addEventListener("click", closeLb);
   $(".lightbox__prev", lb).addEventListener("click", function () { step(-1); });

@@ -1,5 +1,5 @@
 /* =========================================================
-   TransferLux — premium transfer site
+   BusLux — premium transfer site
    ========================================================= */
 :root {
   --bg: #0a0a0b;
@@ -200,9 +200,13 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .chips li { font-size: 13px; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.03); color: rgba(245,242,236,.85); }
 
 .recliner { margin-top: 28px; display: grid; grid-template-columns: 1.15fr 1fr; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line-gold); background: radial-gradient(ellipse at 100% 0%, rgba(214,178,110,.12), transparent 60%), var(--bg-2); }
-.recliner__media { position: relative; min-height: 380px; overflow: hidden; }
-.recliner__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.6s var(--ease); }
-.recliner:hover .recliner__media img { transform: scale(1.04); }
+.recliner__media { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 6px; min-height: 560px; padding: 6px; }
+.recliner__shot { position: relative; overflow: hidden; border-radius: 12px; cursor: zoom-in; background: #000; }
+.recliner__shot--main { grid-row: 1 / span 3; }
+.recliner__shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease), filter .5s; }
+.recliner__shot:hover img { transform: scale(1.05); }
+.recliner__shot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(214,178,110,0); transition: box-shadow .4s; }
+.recliner__shot:hover::after { box-shadow: inset 0 0 0 1px var(--line-gold); }
 .recliner__body { padding: 52px 48px; display: flex; flex-direction: column; justify-content: center; }
 .recliner__body > p:not(.eyebrow) { color: var(--muted); margin-top: 16px; }
 .ticks { display: grid; gap: 12px; margin-top: 26px; }
@@ -356,7 +360,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .section { padding: 88px 0; }
   .fleet, .geo, .booking { grid-template-columns: 1fr; }
   .recliner { grid-template-columns: 1fr; }
-  .recliner__media { min-height: 0; aspect-ratio: 4 / 3; }
+  .recliner__media { min-height: 0; aspect-ratio: 1 / 1; }
   .recliner__body { padding: 34px 26px 36px; }
   .booking { gap: 40px; }
   .booking__info { position: static; }
