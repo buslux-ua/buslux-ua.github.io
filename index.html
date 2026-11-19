@@ -6,6 +6,16 @@
 <title>BusLux — пасажирські перевезення Україна — Європа</title>
 <meta name="description" content="BusLux — комфортні міжнародні пасажирські перевезення Україна — Європа, VIP-трансфери та індивідуальні поїздки на мікроавтобусах Mercedes-Benz Sprinter і Volkswagen.">
 <meta name="theme-color" content="#0a0a0b">
+<meta name="color-scheme" content="dark light">
+<script>
+  /* apply saved theme before CSS paints (no white flash); dark by default */
+  (function () {
+    var t = "dark";
+    try { if (localStorage.getItem("bl-theme") === "light") t = "light"; } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t);
+    if (t === "light") document.querySelector('meta[name="theme-color"]').setAttribute("content", "#ffffff");
+  })();
+</script>
 <meta property="og:title" content="BusLux — Україна ⇄ Європа">
 <meta property="og:description" content="Комфортні пасажирські перевезення, VIP-трансфери та індивідуальні маршрути.">
 <meta property="og:type" content="website">
@@ -31,12 +41,16 @@
     <nav class="nav" aria-label="Main">
       <a href="#services" data-i18n="nav.services">Послуги</a>
       <a href="#fleet" data-i18n="nav.fleet">Автопарк</a>
-      <a href="#advantages" data-i18n="nav.advantages">Переваги</a>
+      <a href="#prices" data-i18n="nav.prices">Ціни</a>
       <a href="#geo" data-i18n="nav.geo">Географія</a>
       <a href="#gallery" data-i18n="nav.gallery">Галерея</a>
-      <a href="#booking" data-i18n="nav.booking">Бронювання</a>
+      <a href="#contacts" data-i18n="nav.contacts">Контакти</a>
     </nav>
     <div class="header__actions">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Світла / темна тема" title="Світла / темна тема">
+        <svg class="i theme-toggle__sun" aria-hidden="true"><use href="#i-sun"/></svg>
+        <svg class="i theme-toggle__moon" aria-hidden="true"><use href="#i-moon"/></svg>
+      </button>
       <div class="lang" role="group" aria-label="Language">
         <button type="button" data-lang="uk" class="is-active">UA</button>
         <button type="button" data-lang="ru">RU</button>
@@ -53,10 +67,12 @@
   <nav class="mmenu__nav">
     <a href="#services" data-i18n="nav.services">Послуги</a>
     <a href="#fleet" data-i18n="nav.fleet">Автопарк</a>
+    <a href="#prices" data-i18n="nav.prices">Ціни</a>
     <a href="#advantages" data-i18n="nav.advantages">Переваги</a>
     <a href="#geo" data-i18n="nav.geo">Географія</a>
     <a href="#gallery" data-i18n="nav.gallery">Галерея</a>
     <a href="#booking" data-i18n="nav.booking">Бронювання</a>
+    <a href="#contacts" data-i18n="nav.contacts">Контакти</a>
   </nav>
   <div class="mmenu__bottom">
     <div class="lang lang--lg" role="group" aria-label="Language">
@@ -65,13 +81,14 @@
       <button type="button" data-lang="en">EN</button>
     </div>
     <a class="btn btn--gold btn--block" href="#booking" data-i18n="cta.book">Забронювати поїздку</a>
+    <a class="btn btn--ghost btn--block wa-link" href="https://wa.me/380937710944" target="_blank" rel="noopener" data-wa><svg class="i"><use href="#i-wa"/></svg>WhatsApp</a>
     <a class="btn btn--ghost btn--block tg-link" href="https://t.me/manager_bus_lux" target="_blank" rel="noopener"><svg class="i"><use href="#i-tg"/></svg>@manager_bus_lux</a>
   </div>
 </div>
 
 <main id="top">
 <!-- ============ HERO ============ -->
-<section class="hero">
+<section class="hero scope-dark">
   <div class="hero__media">
     <img src="https://images.unsplash.com/photo-1765461734605-34657fa04db2?auto=format&fit=crop&w=1600&q=70"
          srcset="https://images.unsplash.com/photo-1765461734605-34657fa04db2?auto=format&fit=crop&w=800&q=70 800w, https://images.unsplash.com/photo-1765461734605-34657fa04db2?auto=format&fit=crop&w=1600&q=70 1600w, https://images.unsplash.com/photo-1765461734605-34657fa04db2?auto=format&fit=crop&w=2400&q=65 2400w"
@@ -85,7 +102,7 @@
     <p class="hero__lead" data-anim="4" data-i18n="hero.lead">Міжнародні поїздки, VIP-трансфери та індивідуальні маршрути на сучасних мікроавтобусах Mercedes-Benz Sprinter і Volkswagen.</p>
     <div class="hero__buttons" data-anim="5">
       <a class="btn btn--gold btn--lg" href="#booking"><span data-i18n="cta.book">Забронювати поїздку</span><svg class="i"><use href="#i-arrow"/></svg></a>
-      <a class="btn btn--ghost btn--lg" href="https://t.me/manager_bus_lux" target="_blank" rel="noopener"><svg class="i"><use href="#i-tg"/></svg><span data-i18n="cta.tg">Наш Telegram</span></a>
+      <a class="btn btn--ghost btn--lg" href="https://t.me/peretin_kordony_ua" target="_blank" rel="noopener"><svg class="i"><use href="#i-tg"/></svg><span data-i18n="cta.tg">Наш Telegram</span></a>
     </div>
     <ul class="hero__facts" data-anim="6">
       <li><b>Mercedes-Benz · VW</b><span data-i18n="hero.f1">сучасні мікроавтобуси</span></li>
@@ -277,7 +294,7 @@
       <p class="section__lead" data-i18n="geo.lead">Поїздки між Україною та країнами Європи. Оберіть напрямок — або замовте індивідуальний маршрут.</p>
     </header>
     <div class="geo">
-      <div class="geo__map reveal" aria-hidden="true">
+      <div class="geo__map scope-dark reveal" aria-hidden="true">
         <svg id="geoMap" viewBox="0 0 640 440"></svg>
       </div>
       <div class="geo__list reveal">
@@ -299,6 +316,30 @@
           <a class="btn btn--gold" href="#booking" data-custom-route><span data-i18n="geo.custom.cta">Замовити свій маршрут</span><svg class="i"><use href="#i-arrow"/></svg></a>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICES ============ -->
+<section class="section" id="prices">
+  <div class="container">
+    <header class="section__head reveal">
+      <p class="eyebrow"><span class="line"></span><span data-i18n="pr.eyebrow">Ціни</span></p>
+      <h2 class="h2" data-i18n="pr.title">Вартість поїздок</h2>
+      <p class="section__lead" data-i18n="pr.lead">Ціни за одного пасажира в обидва боки маршруту. Обирайте клас: Comfort — виїзд о 08:00, Lux — виїзд о 18:00.</p>
+    </header>
+    <div class="filters price-filters reveal" id="priceFilters" role="tablist"></div>
+    <div class="prices" id="priceGrid" aria-live="polite"></div>
+    <div class="prices__more">
+      <button type="button" class="btn btn--outline" id="pricesMore"><span data-i18n="pr.more">Показати всі маршрути</span> <b id="pricesCount"></b></button>
+    </div>
+    <div class="prices__notes card reveal">
+      <ul>
+        <li data-i18n="pr.n1">Ціни вказано «від» — остаточну вартість підтверджує менеджер. Вона залежить від класу, дати поїздки та адреси посадки й висадки.</li>
+        <li id="prDiscounts"></li>
+        <li id="prRate"></li>
+        <li data-i18n="pr.n4">Не знайшли свій маршрут? Напишіть менеджеру — розрахуємо індивідуально.</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -349,9 +390,32 @@
         <li data-i18n="book.l2">Розрахунок вартості під ваш маршрут</li>
         <li data-i18n="book.l3">Жодних оплат на сайті — тільки заявка</li>
       </ul>
-      <div class="booking__direct">
-        <span data-i18n="book.direct">Можна одразу написати менеджеру:</span>
-        <a href="https://t.me/manager_bus_lux" target="_blank" rel="noopener" class="tg-pill"><svg class="i"><use href="#i-tg"/></svg>@manager_bus_lux</a>
+      <div class="contacts" id="contacts">
+        <p class="eyebrow"><span class="line"></span><span data-i18n="ct.eyebrow">Контакти</span></p>
+        <span class="contacts__hint" data-i18n="book.direct">Можна одразу написати менеджеру:</span>
+        <div class="contact-card card">
+          <div class="contact-card__head">
+            <span class="contact-card__icon contact-card__icon--wa"><svg class="i"><use href="#i-wa"/></svg></span>
+            <div>
+              <b class="contact-card__name"><span data-i18n="ct.manager">Менеджер</span> <span data-i18n="ct.vlad">Владислав</span></b>
+              <a class="contact-card__phone" href="tel:+380937710944">+380 93 771 0944</a>
+            </div>
+          </div>
+          <a class="btn btn--wa btn--block" href="https://wa.me/380937710944" target="_blank" rel="noopener" data-wa><svg class="i"><use href="#i-wa"/></svg><span data-i18n="ct.wa">Написати у WhatsApp</span></a>
+        </div>
+        <div class="contact-card card">
+          <div class="contact-card__head">
+            <span class="contact-card__icon"><svg class="i"><use href="#i-tg"/></svg></span>
+            <div>
+              <b class="contact-card__name">Telegram</b>
+              <a class="contact-card__phone" href="https://t.me/manager_bus_lux" target="_blank" rel="noopener">@manager_bus_lux</a>
+            </div>
+          </div>
+          <div class="contact-card__row">
+            <a href="https://t.me/manager_bus_lux" target="_blank" rel="noopener" class="tg-pill"><svg class="i"><use href="#i-tg"/></svg><span data-i18n="ct.tgw">Написати в Telegram</span></a>
+            <a href="https://t.me/peretin_kordony_ua" target="_blank" rel="noopener" class="tg-pill tg-pill--soft"><span data-i18n="ct.channel">Наш канал</span></a>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -425,6 +489,8 @@
     <div class="footer__contact">
       <span data-i18n="foot.manager">Менеджер з бронювання</span>
       <a href="https://t.me/manager_bus_lux" target="_blank" rel="noopener" class="tg-pill"><svg class="i"><use href="#i-tg"/></svg>@manager_bus_lux</a>
+      <a href="https://wa.me/380937710944" target="_blank" rel="noopener" class="tg-pill" data-wa><svg class="i"><use href="#i-wa"/></svg>WhatsApp</a>
+      <a href="tel:+380937710944" class="footer__phone">+380 93 771 0944 · <span data-i18n="ct.vlad">Владислав</span></a>
     </div>
   </div>
   <div class="container footer__bottom">
@@ -437,7 +503,7 @@
 <a class="fab" href="https://t.me/manager_bus_lux" target="_blank" rel="noopener" aria-label="Telegram"><svg class="i"><use href="#i-tg"/></svg></a>
 
 <!-- Lightbox -->
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Gallery">
+<div class="lightbox scope-dark" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Gallery">
   <button class="lightbox__close" type="button" aria-label="Close">&times;</button>
   <button class="lightbox__nav lightbox__prev" type="button" aria-label="Previous"><svg class="i"><use href="#i-chev"/></svg></button>
   <figure class="lightbox__fig"><img alt=""><figcaption></figcaption></figure>
@@ -471,6 +537,9 @@
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-tg" viewBox="0 0 24 24"><path d="M21.5 4.2 2.9 11.4c-1 .4-1 1.6.1 1.9l4.6 1.4 1.8 5.6c.2.7 1.1.9 1.6.4l2.6-2.4 4.7 3.5c.6.4 1.4.1 1.6-.6L22.9 5.6c.3-1-.6-1.8-1.4-1.4ZM9.7 14.5l-.4 3.9-1.3-4.2 10.3-6.6-8.6 6.9Z" fill="currentColor"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></g></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M12 2.2A9.7 9.7 0 0 0 3.6 16.8L2.3 21.7l5-1.3A9.7 9.7 0 1 0 12 2.2Zm0 17.7c-1.5 0-2.9-.4-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 19.9Zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8.9c-.1.2-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3.9 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2.1.7 2.8.6.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.6-.3Z" fill="currentColor"/></symbol>
   <symbol id="i-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></g></symbol>
   <symbol id="i-route" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H16a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h7.5"/></g></symbol>
   <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
@@ -483,6 +552,7 @@
   <symbol id="i-wheel" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2"/><path d="M3.5 10.5c3-1 5.8-1.5 8.5-1.5s5.5.5 8.5 1.5M10.3 13.8 7 20M13.7 13.8 17 20"/></g></symbol>
 </svg>
 
+<script src="js/prices.js" defer></script>
 <script src="js/i18n.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>

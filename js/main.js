@@ -38,7 +38,27 @@
     store.set("tl-lang", l);
     renderGalleryCaptions();
     renderMapLabels();
+    updateWaLinks();
+    renderPrices();
   }
+
+  /* ---------------- Theme (dark default, saved in localStorage) ---------------- */
+  var root = document.documentElement, themeMeta = $('meta[name="theme-color"]');
+  function setTheme(th) {
+    root.setAttribute("data-theme", th);
+    if (themeMeta) themeMeta.setAttribute("content", th === "light" ? "#ffffff" : "#0a0a0b");
+    store.set("bl-theme", th);
+    var b = $("#themeToggle");
+    if (b) b.setAttribute("aria-pressed", String(th === "light"));
+  }
+  $("#themeToggle").addEventListener("click", function () {
+    setTheme(root.getAttribute("data-theme") === "light" ? "dark" : "light");
+  });
+
+  /* ---------------- WhatsApp ---------------- */
+  var WA_NUMBER = "380937710944";
+  function waHref(text) { return "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(text); }
+  function updateWaLinks() { $$("[data-wa]").forEach(function (a) { a.href = waHref(t("wa.msg")); }); }
   $$("[data-lang]").forEach(function (b) {
     b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
   });
@@ -62,6 +82,7 @@
     mmenu.setAttribute("aria-hidden", String(!open));
     burger.setAttribute("aria-expanded", String(open));
     document.body.classList.toggle("no-scroll", open);
+    document.body.classList.toggle("menu-open", open);
   }
   burger.addEventListener("click", function () { toggleMenu(); });
   $$("#mobileMenu a").forEach(function (a) { a.addEventListener("click", function () { toggleMenu(false); }); });
@@ -277,6 +298,64 @@
     });
   });
 
+  /* ---------------- Prices (data in js/prices.js) ---------------- */
+  var PR = window.BUSLUX_PRICES || null;
+  var priceGrid = $("#priceGrid"), priceFilters = $("#priceFilters"), pricesMore = $("#pricesMore");
+  var priceFilter = "all", pricesExpanded = false;
+  var LI = function () { return lang === "ru" ? 1 : lang === "en" ? 2 : 0; };
+  function cityName(k) { var c = PR.cities[k]; return c ? c[LI()] : k; }
+  function fmtNum(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+  function uah(eur) { return Math.round(eur * PR.rate / 10) * 10; }
+  function routeTitle(r) { return cityName(r.from) + " — " + cityName(r.to); }
+  function priceRow(cls, eur, open) {
+    return '<div class="price-row' + (cls === "lux" ? " price-row--lux" : "") + '">' +
+      '<span class="price-row__cls">' + (cls === "lux" ? "Lux" : "Comfort") + '<small>' + t(cls === "lux" ? "pr.dep18" : "pr.dep08") + '</small></span>' +
+      '<span class="price-row__val"><span class="price-row__eur">' + t("pr.from") + " " + eur + (open ? "+" : "") + " €</span>" +
+      '<span class="price-row__uah">≈ ' + fmtNum(uah(eur)) + (open ? "+" : "") + " ₴</span></span></div>";
+  }
+  function renderPrices() {
+    if (!PR || !priceGrid) return;
+    // filters
+    var used = [];
+    PR.routes.forEach(function (r) { if (used.indexOf(r.c) < 0) used.push(r.c); });
+    priceFilters.innerHTML = '<button type="button" data-pf="all" class="' + (priceFilter === "all" ? "is-active" : "") + '">' + t("gal.all") + "</button>" +
+      used.map(function (c) { return '<button type="button" data-pf="' + c + '" class="' + (priceFilter === c ? "is-active" : "") + '">' + PR.countries[c][LI()] + "</button>"; }).join("");
+    // cards
+    var list = PR.routes.filter(function (r) { return priceFilter === "all" || r.c === priceFilter; });
+    var limited = priceFilter === "all" && !pricesExpanded;
+    var shown = limited ? list.slice(0, PR.popular) : list;
+    priceGrid.innerHTML = shown.map(function (r, i) {
+      var idx = PR.routes.indexOf(r);
+      return '<article class="price-card card">' +
+        '<div class="price-card__top"><h3 class="price-card__route">' + cityName(r.from) + ' <span class="arr">⇄</span> ' + cityName(r.to) + "</h3>" +
+        '<span class="cc">' + r.c.toUpperCase() + "</span></div>" +
+        '<div class="price-card__rows">' + priceRow("comfort", r.comfort, r.open) + priceRow("lux", r.lux, r.open) + "</div>" +
+        '<div class="price-card__actions">' +
+          '<a class="btn btn--gold" target="_blank" rel="noopener" data-route="' + idx + '" href="' + waHref(t("wa.route").replace("{route}", routeTitle(r))) + '"><svg class="i"><use href="#i-wa"/></svg><span>' + t("pr.book") + "</span></a>" +
+          '<button type="button" class="price-card__form" data-form-route="' + idx + '" aria-label="' + t("pr.form") + '" title="' + t("pr.form") + '"><svg class="i"><use href="#i-arrow"/></svg></button>' +
+        "</div></article>";
+    }).join("");
+    pricesMore.parentElement.hidden = !limited || list.length <= PR.popular;
+    $("#pricesCount").textContent = "(" + list.length + ")";
+    $("#prDiscounts").textContent = t("pr.disc").replace("{p}", PR.discounts.pensioners).replace("{c}", PR.discounts.children);
+    $("#prRate").innerHTML = t("pr.rate").replace("{rate}", String(PR.rate).replace(".", lang === "en" ? "." : ",")).replace("{date}", PR.rateDate)
+      .replace("{src}", '<a href="https://eurotour.in.ua/" target="_blank" rel="noopener">eurotour.in.ua</a>').replace("{checked}", PR.checked);
+  }
+  if (priceFilters) priceFilters.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-pf]"); if (!b) return;
+    priceFilter = b.getAttribute("data-pf"); renderPrices();
+  });
+  if (pricesMore) pricesMore.addEventListener("click", function () { pricesExpanded = true; renderPrices(); });
+  if (priceGrid) priceGrid.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-form-route]"); if (!b) return;
+    var r = PR.routes[+b.getAttribute("data-form-route")];
+    form.elements.from.value = cityName(r.from);
+    form.elements.to.value = cityName(r.to);
+    selectedService = null;
+    $("#booking").scrollIntoView({ behavior: "smooth" });
+    setTimeout(function () { form.elements.date.focus({ preventScroll: true }); }, 700);
+  });
+
   /* ---------------- Booking form ---------------- */
   var form = $("#bookingForm");
   var selectedService = null;
@@ -391,5 +470,6 @@
 
   /* ---------------- Init ---------------- */
   $("#year").textContent = new Date().getFullYear();
+  $("#themeToggle").setAttribute("aria-pressed", String(root.getAttribute("data-theme") === "light"));
   setLang(store.get("tl-lang") || "uk");
 })();
